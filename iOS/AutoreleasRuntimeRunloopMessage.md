@@ -1,8 +1,8 @@
 ## 一、自动释放池
 
-#### 1. 自动释放池本质上做了什么
+### 1. 自动释放池本质上做了什么
 
-##### （1）@autorelease
+（1）@autorelease
 
 官方格式
 
@@ -25,7 +25,7 @@
 }
 ```
 
-##### （2）两个函数
+（2）两个函数
 
 ```c
 void * objc_autoreleasePoolPush(void) {			
@@ -39,7 +39,7 @@ void objc_autoreleasePoolPop(void * ctxt) {
 
 
 
-#### 2. Autorelease相关关键类，AutoreleasePoolPage
+### 2. Autorelease相关关键类，AutoreleasePoolPage
 
 （1）AutoreleasePoolPage是一个C++类
 
@@ -63,7 +63,7 @@ class AutoreleasePoolPage {
 
 
 
-#### 3. AutoreleasePoolPage::Push()做了什么
+### 3. AutoreleasePoolPage::Push()做了什么
 
 （1）如果存在hotPage（当前活跃AutoreleasePoolPage对象），并且hotPage对象没有存储满，则将一个哨兵对象（本质为nil）压入hotPage栈顶
 
@@ -73,7 +73,7 @@ class AutoreleasePoolPage {
 
 
 
-#### 4. 对象发送autorelease消息
+### 4. 对象发送autorelease消息
 
 对象发送autorelease消息后，当前自动释放池所对应的AutoreleasePoolPage hotPage对象将该对象进行压栈操作（page->add(id obj)）
 
@@ -90,7 +90,7 @@ id * add(id obj) {
 
 
 
-#### 5. AutoreleasePoolPage::Pop()做了什么
+### 5. AutoreleasePoolPage::Pop()做了什么
 
 （1）将晚于该自动释放池的哨兵对象压入栈的所以对象进行出栈操作、release操作
 
@@ -100,7 +100,7 @@ id * add(id obj) {
 
 ## 二、Runloop
 
-#### 参考链接[http://www.cocoachina.com/ios/20150601/11970.html](http://www.cocoachina.com/ios/20150601/11970.html)
+### 参考链接[http://www.cocoachina.com/ios/20150601/11970.html](http://www.cocoachina.com/ios/20150601/11970.html)
 
 RunLoop 是 iOS 和 OS X 开发中非常基础的一个概念，这篇文章将从 CFRunLoop 的源码入手，介绍 RunLoop 的概念以及底层实现原理。之后会介绍一下在 iOS 中，苹果是如何利用 RunLoop 实现自动释放池、延迟回调、触摸事件、屏幕刷新等功能的。
 
@@ -108,7 +108,7 @@ RunLoop 是 iOS 和 OS X 开发中非常基础的一个概念，这篇文章将�
 
 
 
-#### 1. RunLoop概念
+### 1. RunLoop概念
 
 RunLoop 实际上就是一个对象，这个对象管理了其需要处理的事件和消息，并提供了一个入口函数来执行Event Loop（下述函数）的逻辑。线程执行了这个函数后，就会一直处于这个函数内部 "接受消息->等待->处理" 的循环中，直到这个循环结束（比如传入 quit 的消息），函数返回。
 
@@ -136,7 +136,7 @@ NSRunLoop 是基于 CFRunLoopRef 的封装，提供了面向对象的 API，但�
 
 
 
-#### 2. RunLoop对外接口
+### 2. RunLoop对外接口
 
 （1）CFRunLoopRef
 
@@ -152,17 +152,17 @@ NSRunLoop 是基于 CFRunLoopRef 的封装，提供了面向对象的 API，但�
 
 
 
-#### 3. 内部逻辑
+### 3. 内部逻辑
 
 
 
 ## 三、Runtime
 
-#### 1. Method Swizzling
+### 1. Method Swizzling
 
-##### 【示例】通过Method Swizzling实现Log日志
+#### 【示例】通过Method Swizzling实现Log日志
 
-##### （1）首先定义一个类别，添加将要 Swizzled 的方法：
+（1）首先定义一个类别，添加将要 Swizzled 的方法：
 
 ```objective-c
 @implementation UIViewController (Logging)
@@ -178,7 +178,7 @@ NSRunLoop 是基于 CFRunLoopRef 的封装，提供了面向对象的 API，但�
 }
 ```
 
-##### （2）接下来实现 swizzle 的方法 ：
+（2）接下来实现 swizzle 的方法 ：
 
 ```objective-c
 @implementation UIViewController (Logging)
@@ -202,7 +202,7 @@ void swizzleMethod(Class class, SEL originalSelector, SEL swizzledSelector)
 }
 ```
 
-##### （3）最后，我们只需要确保在程序启动的时候调用 swizzleMethod 方法。比如，我们可以在类别里添加 +load: 方法，然后在 +load: 里把 viewDidAppear 给替换掉：
+（3）最后，我们只需要确保在程序启动的时候调用 swizzleMethod 方法。比如，我们可以在类别里添加 +load: 方法，然后在 +load: 里把 viewDidAppear 给替换掉：
 
 ```objective-c
 @implementation UIViewController (Logging)
@@ -215,7 +215,7 @@ void swizzleMethod(Class class, SEL originalSelector, SEL swizzledSelector)
 
 【注】一般情况下，类别里的方法会重写掉主类里相同命名的方法。如果有两个类别实现了相同命名的方法，只有一个方法会被调用。但 +load: 是个特例，当一个类被读到内存的时候， runtime 会给这个类及它的每一个类别都发送一个 +load: 消息。
 
-##### （4）其实，这里还可以更简化点：直接用新的 IMP 取代原 IMP ，而不是替换。只需要有全局的函数指针指向原 IMP 就可以。
+（4）其实，这里还可以更简化点：直接用新的 IMP 取代原 IMP ，而不是替换。只需要有全局的函数指针指向原 IMP 就可以。
 
 ```objective-c
 void (gOriginalViewDidAppear)(id, SEL, BOOL);
@@ -243,9 +243,9 @@ void newViewDidAppear(UIViewController *self, SEL _cmd, BOOL animated)
 
 ## 四、消息机制
 
-#### 参考链接（[http://draveness.me/message.html](http://draveness.me/message.html)）
+### 参考链接（[http://draveness.me/message.html](http://draveness.me/message.html)）
 
-#### 1. Objective-C 中给一个对象发送消息会经过以下几个步骤：
+### 1. Objective-C 中给一个对象发送消息会经过以下几个步骤：
 
 （1）在对象类的 dispatch table 中尝试找到该消息。如果找到了，跳到相应的函数IMP去执行实现代码；
 
