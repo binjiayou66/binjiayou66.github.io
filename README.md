@@ -1,37 +1,30 @@
-## Welcome to GitHub Pages
+## 欢迎访问我的GitHub Pages
 
-You can use the [editor on GitHub](https://github.com/binjiayou66/binjiayou66.github.io/edit/master/README.md) to maintain and preview the content for your website in Markdown files.
+#### 简介
 
-Whenever you commit to this repository, GitHub Pages will run [Jekyll](https://jekyllrb.com/) to rebuild the pages in your site, from the content in your Markdown files.
+一只iOS开发汪，骑行爱好者，摄影菜手。爱生活，爱游戏。
 
-### Markdown
+#### 联系我
 
-Markdown is a lightweight and easy-to-use syntax for styling your writing. It includes conventions for
+Email：binjiayou66@163.com
 
-```markdown
-Syntax highlighted code block
+QQ: 1286216625
 
-# Header 1
-## Header 2
-### Header 3
 
-- Bulleted
-- List
 
-1. Numbered
-2. List
+## 正文
 
-**Bold** and _Italic_ and `Code` text
+### [2017.07.06-02 iOS开发几个重要的概念总结](iOS/AutoreleasRuntimeRunloopMessage.md)
 
-[Link](url) and ![Image](src)
-```
+本文主要对iOS开发当中比较重要的几个基础概念进行总结说明，主要包含有Autorelease、RunLoop、Runtime和消息机制。
 
-For more details see [GitHub Flavored Markdown](https://guides.github.com/features/mastering-markdown/).
+### [2017.07.06-01 iOS组件化](iOS/Modulization.md)
 
-### Jekyll Themes
+私有化Pod库，实现iOS App组件式开发。通过加入反革命工程师大神的Target-Action组件进行调用间解耦。
 
-Your Pages site will use the layout and styles from the Jekyll theme you have selected in your [repository settings](https://github.com/binjiayou66/binjiayou66.github.io/settings). The name of this theme is saved in the Jekyll `_config.yml` configuration file.
 
-### Support or Contact
 
-Having trouble with Pages? Check out our [documentation](https://help.github.com/categories/github-pages-basics/) or [contact support](https://github.com/contact) and we’ll help you sort it out.
+## 结束语
+
+安得广厦千万间。
+
