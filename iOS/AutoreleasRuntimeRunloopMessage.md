@@ -234,7 +234,7 @@ void newViewDidAppear(UIViewController *self, SEL _cmd, BOOL animated)
 	Method originalMethod = class_getInstanceMethod(self, @selector(viewDidAppear:));
 	gOriginalViewDidAppear = (void *)method_getImplementation(originalMethod);
 	if(!class_addMethod(self, @selector(viewDidAppear:), (IMP) newViewDidAppear, method_getTypeEncoding(originalMethod))) {
-	method_setImplementation(originalMethod, (IMP) newViewDidAppear);
+		method_setImplementation(originalMethod, (IMP) newViewDidAppear);
 	}
 }
 ```
