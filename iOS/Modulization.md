@@ -6,11 +6,11 @@
 
 ## 第一章 创建私有远程Pod库（以Github为例）
 
-#### 1. 创建github repository，用于托管私有Pod库。获取私有库地址（https://github.com/allheroes/iSpecs.git）
+### 1. 创建github repository，用于托管私有Pod库。获取私有库地址（https://github.com/allheroes/iSpecs.git）
 
 ![ispecs](../resources/images/modulization/ispecs.png)
 
-#### 2. 将远程私有库关联至本地Pod
+### 2. 将远程私有库关联至本地Pod
 
 在终端中执行：pod repo add iOSSpecs https://github.com/allheroes/iOSSpecs.git
 
