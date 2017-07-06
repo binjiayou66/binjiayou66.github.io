@@ -1,1 +1,7 @@
 theme: jekyll-theme-cayman
+# Site settings
+title: 乃彬同学
+description: Be a better man.
+
+# Build settings
+markdown: kramdown
