@@ -41,7 +41,7 @@ void objc_autoreleasePoolPop(void * ctxt) {
 
 #### 2. Autorelease相关关键类，AutoreleasePoolPage
 
-##### （1）AutoreleasePoolPage是一个C++类
+（1）AutoreleasePoolPage是一个C++类
 
 ```c++
 class AutoreleasePoolPage {			
@@ -55,11 +55,11 @@ class AutoreleasePoolPage {
 }
 ```
 
-##### （2）每一个AutoreleasePoolPage对象大小为4096字节
+（2）每一个AutoreleasePoolPage对象大小为4096字节
 
-##### （3）每一个AutoreleasePoolPage对象为一个双向链表节点
+（3）每一个AutoreleasePoolPage对象为一个双向链表节点
 
-##### （4）一个AutoreleasePool由一个或者多个AutoreleasePoolPage对象进行管理自动释放的对象
+（4）一个AutoreleasePool由一个或者多个AutoreleasePoolPage对象进行管理自动释放的对象
 
 
 
@@ -84,7 +84,7 @@ id * add(id obj) {
 	*next = obj;
 	next++;
 	
-  return ret;
+  	return ret;
 }
 ```
 
@@ -92,9 +92,9 @@ id * add(id obj) {
 
 #### 5. AutoreleasePoolPage::Pop()做了什么
 
-##### （1）将晚于该自动释放池的哨兵对象压入栈的所以对象进行出栈操作、release操作
+（1）将晚于该自动释放池的哨兵对象压入栈的所以对象进行出栈操作、release操作
 
-##### （2）如果存在多余AutoreleasePoolPage，kill掉
+（2）如果存在多余AutoreleasePoolPage，kill掉
 
 
 
