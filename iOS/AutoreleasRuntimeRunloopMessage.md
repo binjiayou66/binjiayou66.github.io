@@ -88,11 +88,15 @@ id * add(id obj) {
 }
 ```
 
+![addobj](../resources/images/autorelease/addobj.png)
+
 
 
 ### 5. AutoreleasePoolPage::Pop()做了什么
 
 （1）将晚于该自动释放池的哨兵对象压入栈的所以对象进行出栈操作、release操作
+
+![pop](../resources/images/autorelease/pagepop.png)
 
 （2）如果存在多余AutoreleasePoolPage，kill掉
 
