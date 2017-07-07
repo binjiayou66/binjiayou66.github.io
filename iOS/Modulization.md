@@ -1,10 +1,10 @@
-# 一、iOS工程组件化
+# Part1 iOS工程组件化
 
 ## 前言
 
 ### 1. cocoapods官方地址：[Cocoapods](https://guides.cocoapods.org/)
 
-## 步骤1 创建私有远程Pod库（以Github为例）
+## 一、创建私有远程Pod库（以Github为例）
 
 ### 1. 创建github repository，用于托管私有Pod库。获取私有库地址（https://github.com/allheroes/iSpecs.git）
 
@@ -20,7 +20,7 @@ pod repo add iSpecs https://github.com/allheroes/iSpecs.git
 
 
 
-## 步骤2 创建组件
+## 二、创建组件
 
 ### 1. 创建组件repository - 基础网络库组件（https://github.com/allheroes/iNetworking.git）
 
@@ -50,7 +50,7 @@ git push origin --tags
 
 
 
-## 步骤3 创建podspec文件
+## 三、创建podspec文件
 
 ### 1. 创建网络库的spec文件
 
@@ -115,7 +115,7 @@ pod repo push iOSSpecs iOSModulizationNetworking.podspec
 
 
 
-## 步骤4 创建上层组件
+## 四、创建上层组件
 
 ### 1. github创建业务模块-好友（https://github.com/allheroes/iFriends.git）
 
@@ -144,7 +144,7 @@ Pod installation complete! There is 1 dependency from the Podfile and 2 total po
 
 
 
-## 步骤5 好友组件创建spec文件，形成组件
+## 五、好友组件创建spec文件，形成组件
 
  iFriends.podspec文件：
 
@@ -174,7 +174,7 @@ end
 
 
 
-## 步骤6 创建最顶层APP
+## 六、创建最顶层APP
 
 ### 1. 在github中创建顶层应用repo iPay（https://github.com/allheroes/iPay.git）
 
@@ -186,6 +186,6 @@ end
 
 
 
-# 二、Target-Action解耦
+# Part2 Target-Action解耦
 
 ## 【参考内容】反革命工程师[Casa Taloyum](https://casatwy.com/)
