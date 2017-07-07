@@ -166,6 +166,8 @@ NSRunLoop 是基于 CFRunLoopRef 的封装，提供了面向对象的 API，但�
 
 ## 三、Runtime
 
+### 参考链接http://tech.glowing.com/cn/method-swizzling-aop/
+
 ### 1. Method Swizzling
 
 #### 【示例】通过Method Swizzling实现Log日志
@@ -251,7 +253,7 @@ void newViewDidAppear(UIViewController *self, SEL _cmd, BOOL animated)
 
 ## 四、消息机制
 
-### 参考链接（[http://draveness.me/message.html](http://draveness.me/message.html)）
+### 参考链接[http://draveness.me/message.html](http://draveness.me/message.html)
 
 ### 1. Objective-C 中给一个对象发送消息会经过以下几个步骤：
 
