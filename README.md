@@ -1,3 +1,5 @@
+<a id="top" name="top"></a>
+
 ## 欢迎访问我的GitHub Pages
 
 #### 简介
@@ -6,7 +8,7 @@
 
 #### 导航
 
-<a href='#content'>正文</a>   <a href='#photos'>美不胜收</a>   <a href='#end'>结束语</a>
+<a href='#content'>正文</a>   <a href='#photos'>美不胜收</a>   <a href='#tail'>结束语</a>
 
 #### 联系我
 
@@ -67,7 +69,7 @@ QQ: 1286216625
 
 <hr>
 
-<a id="end" name="end"></a>
+<a id="tail" name="tail"></a>
 
 ## 结束语
 
@@ -76,3 +78,5 @@ QQ: 1286216625
 <br>
 
 文中内容版权归本人所有，若有引用，请联系我。
+
+<div style="position: fixed; right: 80px; bottom: 120px"><a href="#top">回到顶部</a></div>
