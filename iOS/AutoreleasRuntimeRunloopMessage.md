@@ -1,110 +1,6 @@
 <a id="top" name="top"></a>
 
-## 一、自动释放池
-
-### 1. 自动释放池本质上做了什么
-
-（1）@autorelease
-
-官方格式
-
-```objective-c
-@autorelease { 
-  // code 
-}  
-```
-
-等价于
-
-```objective-c
-{ 
-	void * autoreleasepoolobj = objc_autoreleasePoolPush();  
-	
-	// code  
-
-	objc_autoreleasePoolPop(autoreleasepoolobj);
-
-}
-```
-
-（2）两个函数
-
-```c
-void * objc_autoreleasePoolPush(void) {			
-	return AutoreleasePoolPage::Push();
-}
-
-void objc_autoreleasePoolPop(void * ctxt) {			
-	AutoreleasePoolPage::Pop(ctxt);
-}
-```
-
-
-
-### 2. Autorelease相关关键类，AutoreleasePoolPage
-
-（1）AutoreleasePoolPage是一个C++类
-
-```c++
-class AutoreleasePoolPage {			
-	magic_t const magic;
-	id * next;
-	pthread_t const thread;
-	AutoreleasePoolPage * const parent;
-	AutoreleasePoolPage * child;
-	uint32_t const depth;
-	uint32_t hiwat;
-}
-```
-
-（2）每一个AutoreleasePoolPage对象大小为4096字节
-
-（3）每一个AutoreleasePoolPage对象为一个双向链表节点
-
-（4）一个AutoreleasePool由一个或者多个AutoreleasePoolPage对象进行管理自动释放的对象
-
-
-
-### 3. AutoreleasePoolPage::Push()做了什么
-
-（1）如果存在hotPage（当前活跃AutoreleasePoolPage对象），并且hotPage对象没有存储满，则将一个哨兵对象（本质为nil）压入hotPage栈顶
-
-（2）如果存在hotPage，但是hotPage已满，则创建新的AutoreleasePoolPage对象，设置为新的hotPage，双向链表进行相关关联后，将一个哨兵对象压入当前hotPage栈顶
-
-（3）如果不存在hotPage，则创建新的AutoreleasePoolPage对象，设置为hotPage，将一个哨兵对象压入当前hotPage栈顶。初始的AutoreleasePoolPage对象的parent节点为空，hotPage的child节点为空。
-
-
-
-### 4. 对象发送autorelease消息
-
-对象发送autorelease消息后，当前自动释放池所对应的AutoreleasePoolPage hotPage对象将该对象进行压栈操作（page->add(id obj)）
-
-```c
-id * add(id obj) {
-	
-	id * ret = next;
-	*next = obj;
-	next++;
-	
-  	return ret;
-}
-```
-
-![addobj](../resources/images/autorelease/addobj.png)
-
-
-
-### 5. AutoreleasePoolPage::Pop()做了什么
-
-（1）将晚于该自动释放池的哨兵对象压入栈的所以对象进行出栈操作、release操作
-
-![pop](../resources/images/autorelease/pagepop.png)
-
-（2）如果存在多余AutoreleasePoolPage，kill掉
-
-
-
-## 二、Runloop
+## 一、Runloop
 
 ### 参考链接[http://www.cocoachina.com/ios/20150601/11970.html](http://www.cocoachina.com/ios/20150601/11970.html)
 
@@ -281,6 +177,66 @@ int CFRunLoopRunSpecific(runloop, modeName, seconds, stopAfterHandle) {
 
 【注】第七步mach_msg(msg, MACH_RCV_MSG, port);涉及到内核编程，详细内容可参考《OS X与iOS内核编程》
 
+【附】OS X与iOS系统架构简介
+
+从上述代码第七步看，RunLoop核心是基于 mach port 的，其进入休眠时调用的函数是 mach_msg()。为了解释这个逻辑，下面稍微介绍一下 OSX/iOS 的系统架构。
+
+![osxiosconstruction](../resources/images/runloop/osxiosconstruction.png)
+
+其中最基础的部分是Darwin核心，其架构示意图如下：
+
+![darwinconstruction](../resources/images/runloop/darwinconstruction.png)
+
+在硬件层上面的三个组成部分：Mach、BSD、IOKit (还包括一些上面没标注的内容)，共同组成了 XNU 内核。
+
+XNU 内核的内环被称作 Mach，其作为一个*微内核*，仅提供了诸如处理器调度、IPC (进程间通信)等非常少量的基础服务。
+
+BSD 层可以看作围绕 Mach 层的一个外环，其提供了诸如进程管理、文件系统和网络等功能。
+
+IOKit 层是为设备驱动提供了一个面向对象(C++)的一个框架。
+
+【注1】内核分为巨内核、微内核和混合内核，OS X与iOS内核为混合内核。
+
+【注2】微内核优点：正确性(代码少)、健壮性(崩溃少)、灵活性；缺点：服务程序之间通信采用消息传递机制(发送-排队-执行)，而在内核中，消息传递需要通过内存复制操作以及数次上下文切换操作来实现，这对性能是一种拖累。
+
+Mach 的消息定义是在头文件的，很简单：
+
+```c
+typedef struct {
+  mach_msg_header_t header;
+  mach_msg_body_t body;
+} mach_msg_base_t;
+  
+typedef struct {
+  mach_msg_bits_t msgh_bits;
+  mach_msg_size_t msgh_size;
+  mach_port_t msgh_remote_port;
+  mach_port_t msgh_local_port;
+  mach_port_name_t msgh_voucher_port;
+  mach_msg_id_t msgh_id;
+} mach_msg_header_t;
+```
+
+一条 Mach 消息实际上就是一个二进制数据包 (BLOB)，其头部定义了当前端口 local_port 和目标端口 remote_port，发送和接受消息是通过同一个 API 进行的，其 option 标记了消息传递的方向：
+
+```c
+mach_msg_return_t mach_msg(
+	mach_msg_header_t *msg,
+	mach_msg_option_t option,
+	mach_msg_size_t send_size,
+	mach_msg_size_t rcv_size,
+	mach_port_name_t rcv_name,
+	mach_msg_timeout_t timeout,
+	mach_port_name_t notify
+);
+```
+
+为了实现消息的发送和接收，mach_msg() 函数实际上是调用了一个 Mach 陷阱 (trap)，即函数mach_msg_trap()，陷阱这个概念在 Mach 中等同于系统调用。当你在用户态调用 mach_msg_trap() 时会触发陷阱机制，切换到*内核态*；内核态中内核实现的 mach_msg() 函数会完成实际的工作，如下图：
+
+![machmsg](../resources/images/runloop/machmsg.png)
+
+RunLoop 的核心就是一个 mach_msg() (见上面代码的第7步)，RunLoop 调用这个函数去接收消息，如果没有别人发送 port 消息过来，内核会将线程置于等待状态。例如你在模拟器里跑起一个 iOS 的 App，然后在 App 静止时点击暂停，你会看到主线程调用栈是停留在 mach_msg_trap() 这个地方。
+
 
 
 ### 5. RunLoop应用场景
@@ -333,6 +289,110 @@ AFNetworking中RunLoop的创建：
     [runLoop runUntilDate:[NSDate dateWithTimeIntervalSinceNow:60*30]];
 }
 ```
+
+
+
+## 二、自动释放池
+
+### 1. 自动释放池本质上做了什么
+
+（1）@autorelease
+
+官方格式
+
+```objective-c
+@autorelease { 
+  // code 
+}  
+```
+
+等价于
+
+```objective-c
+{ 
+	void * autoreleasepoolobj = objc_autoreleasePoolPush();  
+	
+	// code  
+
+	objc_autoreleasePoolPop(autoreleasepoolobj);
+
+}
+```
+
+（2）两个函数
+
+```c
+void * objc_autoreleasePoolPush(void) {			
+	return AutoreleasePoolPage::Push();
+}
+
+void objc_autoreleasePoolPop(void * ctxt) {			
+	AutoreleasePoolPage::Pop(ctxt);
+}
+```
+
+
+
+### 2. Autorelease相关关键类，AutoreleasePoolPage
+
+（1）AutoreleasePoolPage是一个C++类
+
+```c++
+class AutoreleasePoolPage {			
+	magic_t const magic;
+	id * next;
+	pthread_t const thread;
+	AutoreleasePoolPage * const parent;
+	AutoreleasePoolPage * child;
+	uint32_t const depth;
+	uint32_t hiwat;
+}
+```
+
+（2）每一个AutoreleasePoolPage对象大小为4096字节
+
+（3）每一个AutoreleasePoolPage对象为一个双向链表节点
+
+（4）一个AutoreleasePool由一个或者多个AutoreleasePoolPage对象进行管理自动释放的对象
+
+
+
+### 3. AutoreleasePoolPage::Push()做了什么
+
+（1）如果存在hotPage（当前活跃AutoreleasePoolPage对象），并且hotPage对象没有存储满，则将一个哨兵对象（本质为nil）压入hotPage栈顶
+
+（2）如果存在hotPage，但是hotPage已满，则创建新的AutoreleasePoolPage对象，设置为新的hotPage，双向链表进行相关关联后，将一个哨兵对象压入当前hotPage栈顶
+
+（3）如果不存在hotPage，则创建新的AutoreleasePoolPage对象，设置为hotPage，将一个哨兵对象压入当前hotPage栈顶。初始的AutoreleasePoolPage对象的parent节点为空，hotPage的child节点为空。
+
+
+
+### 4. 对象发送autorelease消息
+
+对象发送autorelease消息后，当前自动释放池所对应的AutoreleasePoolPage hotPage对象将该对象进行压栈操作（page->add(id obj)）
+
+```c
+id * add(id obj) {
+	
+	id * ret = next;
+	*next = obj;
+	next++;
+	
+  	return ret;
+}
+```
+
+![addobj](../resources/images/autorelease/addobj.png)
+
+
+
+### 5. AutoreleasePoolPage::Pop()做了什么
+
+（1）将晚于该自动释放池的哨兵对象压入栈的所以对象进行出栈操作、release操作
+
+![pop](../resources/images/autorelease/pagepop.png)
+
+（2）如果存在多余AutoreleasePoolPage，kill掉
 
 
 
