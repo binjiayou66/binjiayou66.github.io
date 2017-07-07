@@ -16,7 +16,7 @@ QQ: 1286216625
 
 <hr>
 
-<a id='content'></a>
+<a id="content" name="content"></a>
 
 ## 正文
 
@@ -30,7 +30,7 @@ QQ: 1286216625
 
 <hr>
 
-<a id='photos'></a>
+<a id="photos" name="photos"></a>
 
 ## 美不胜收
 
@@ -67,7 +67,7 @@ QQ: 1286216625
 
 <hr>
 
-<a id='end'></a>
+<a id="end" name="end"></a>
 
 ## 结束语
 
@@ -76,4 +76,3 @@ QQ: 1286216625
 <br>
 
 文中内容版权归本人所有，若有引用，请联系我。
-
