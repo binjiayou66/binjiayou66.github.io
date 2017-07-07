@@ -1,5 +1,7 @@
 # Part1 iOS工程组件化
 
+<hr>
+
 ## 前言
 
 ### 1. cocoapods官方地址：[Cocoapods](https://guides.cocoapods.org/)
@@ -184,8 +186,12 @@ end
 
 ### 4. 在iPay中，使用组件
 
+<hr>
 
+<br>
 
 # Part2 Target-Action解耦
+
+<hr>
 
 ## 【参考内容】反革命工程师[Casa Taloyum](https://casatwy.com/)
