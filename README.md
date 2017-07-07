@@ -22,6 +22,10 @@ QQ: 1286216625
 
 ## 正文
 
+### [2017.07.08 IOS内核架构浅谈【转】](http://www.jianshu.com/p/a1a2921f2399) 
+
+内核是操作系统中最为关键的部分。内核是负责接触底层的，因此大部分都是用C语言写的，有的甚至用汇编。IOS的核心是XNU内核，先从一些内核基本知识谈起。
+
 ### [2017.07.07 iOS开发几个重要的概念总结](iOS/AutoreleasRuntimeRunloopMessage.md)
 
 本文主要对iOS开发当中比较重要的几个基础概念进行总结说明，主要包含有Autorelease、RunLoop、Runtime和消息机制。

@@ -164,13 +164,183 @@ NSRunLoop 是基于 CFRunLoopRef 的封装，提供了面向对象的 API，但�
 
 ![construction](../resources/images/runloop/runloopflow.png)
 
+### 4. RunLoop 的底层实现
+
+```c
+/// 用DefaultMode启动
+void CFRunLoopRun(void) {
+    CFRunLoopRunSpecific(CFRunLoopGetCurrent(), kCFRunLoopDefaultMode, 1.0e10, false);
+}
+  
+/// 用指定的Mode启动，允许设置RunLoop超时时间
+int CFRunLoopRunInMode(CFStringRef modeName, CFTimeInterval seconds, Boolean stopAfterHandle) {
+    return CFRunLoopRunSpecific(CFRunLoopGetCurrent(), modeName, seconds, returnAfterSourceHandled);
+}
+  
+/// RunLoop的实现
+int CFRunLoopRunSpecific(runloop, modeName, seconds, stopAfterHandle) {
+     
+    /// 首先根据modeName找到对应mode
+    CFRunLoopModeRef currentMode = __CFRunLoopFindMode(runloop, modeName, false);
+    /// 如果mode里没有source/timer/observer, 直接返回。
+    if (__CFRunLoopModeIsEmpty(currentMode)) return;
+     
+    /// 1. 通知 Observers: RunLoop 即将进入 loop。
+    __CFRunLoopDoObservers(runloop, currentMode, kCFRunLoopEntry);
+     
+    /// 内部函数，进入loop
+    __CFRunLoopRun(runloop, currentMode, seconds, returnAfterSourceHandled) {
+         
+        Boolean sourceHandledThisLoop = NO;
+        int retVal = 0;
+        do {
+  
+            /// 2. 通知 Observers: RunLoop 即将触发 Timer 回调。
+            __CFRunLoopDoObservers(runloop, currentMode, kCFRunLoopBeforeTimers);
+            /// 3. 通知 Observers: RunLoop 即将触发 Source0 (非port) 回调。
+            __CFRunLoopDoObservers(runloop, currentMode, kCFRunLoopBeforeSources);
+            /// 执行被加入的block
+            __CFRunLoopDoBlocks(runloop, currentMode);
+             
+            /// 4. RunLoop 触发 Source0 (非port) 回调。
+            sourceHandledThisLoop = __CFRunLoopDoSources0(runloop, currentMode, stopAfterHandle);
+            /// 执行被加入的block
+            __CFRunLoopDoBlocks(runloop, currentMode);
+  
+            /// 5. 如果有 Source1 (基于port) 处于 ready 状态，直接处理这个 Source1 然后跳转去处理消息。
+            if (__Source0DidDispatchPortLastTime) {
+                Boolean hasMsg = __CFRunLoopServiceMachPort(dispatchPort, &msg)
+                if (hasMsg) goto handle_msg;
+            }
+             
+            /// 通知 Observers: RunLoop 的线程即将进入休眠(sleep)。
+            if (!sourceHandledThisLoop) {
+                __CFRunLoopDoObservers(runloop, currentMode, kCFRunLoopBeforeWaiting);
+            }
+             
+            /// 7. 调用 mach_msg 等待接受 mach_port 的消息。线程将进入休眠, 直到被下面某一个事件唤醒。
+            /// (1) 一个基于 port 的Source 的事件。
+            /// (2) 一个 Timer 到时间了
+            /// (3) RunLoop 自身的超时时间到了
+            /// (4) 被其他什么调用者手动唤醒
+            __CFRunLoopServiceMachPort(waitSet, &msg, sizeof(msg_buffer), &livePort) {
+                mach_msg(msg, MACH_RCV_MSG, port); // thread wait for receive msg
+            }
+  
+            /// 8. 通知 Observers: RunLoop 的线程刚刚被唤醒了。
+            __CFRunLoopDoObservers(runloop, currentMode, kCFRunLoopAfterWaiting);
+             
+            /// 收到消息，处理消息。
+            handle_msg:
+  
+            /// 9.1 如果一个 Timer 到时间了，触发这个Timer的回调。
+            if (msg_is_timer) {
+                __CFRunLoopDoTimers(runloop, currentMode, mach_absolute_time())
+            } 
+  
+            /// 9.2 如果有dispatch到main_queue的block，执行block。
+            else if (msg_is_dispatch) {
+                __CFRUNLOOP_IS_SERVICING_THE_MAIN_DISPATCH_QUEUE__(msg);
+            } 
+  
+            /// 9.3 如果一个 Source1 (基于port) 发出事件了，处理这个事件
+            else {
+                CFRunLoopSourceRef source1 = __CFRunLoopModeFindSourceForMachPort(runloop, currentMode, livePort);
+                sourceHandledThisLoop = __CFRunLoopDoSource1(runloop, currentMode, source1, msg);
+                if (sourceHandledThisLoop) {
+                    mach_msg(reply, MACH_SEND_MSG, reply);
+                }
+            }
+             
+            /// 执行加入到Loop的block
+            __CFRunLoopDoBlocks(runloop, currentMode);
+             
+  
+            if (sourceHandledThisLoop && stopAfterHandle) {
+                /// 进入loop时参数说处理完事件就返回。
+                retVal = kCFRunLoopRunHandledSource;
+            } else if (timeout) {
+                /// 超出传入参数标记的超时时间了
+                retVal = kCFRunLoopRunTimedOut;
+            } else if (__CFRunLoopIsStopped(runloop)) {
+                /// 被外部调用者强制停止了
+                retVal = kCFRunLoopRunStopped;
+            } else if (__CFRunLoopModeIsEmpty(runloop, currentMode)) {
+                /// source/timer/observer一个都没有了
+                retVal = kCFRunLoopRunFinished;
+            }
+             
+            /// 如果没超时，mode里没空，loop也没被停止，那继续loop。
+        } while (retVal == 0);
+    }
+     
+    /// 10. 通知 Observers: RunLoop 即将退出。
+    __CFRunLoopDoObservers(rl, currentMode, kCFRunLoopExit);
+}
+```
+
+【注】第七步mach_msg(msg, MACH_RCV_MSG, port);涉及到内核编程，详细内容可参考《OS X与iOS内核编程》
+
+
+
+### 5. RunLoop应用场景
+
+（1）开启常驻线程
+
+AFNetworking中RunLoop的创建：
+
+```objective-c
++ (NSThread *)networkRequestThread {
+    static NSThread *_networkRequestThread = nil;
+    static dispatch_once_t oncePredicate;
+    dispatch_once(&oncePredicate, ^{
+        _networkRequestThread =
+        [[NSThread alloc] initWithTarget:self
+                                selector:@selector(networkRequestThreadEntryPoint:)
+                                  object:nil];
+        [_networkRequestThread start];
+    });
+    return _networkRequestThread;
+}
+
++ (void)networkRequestThreadEntryPoint:(id)__unused object {
+    @autoreleasepool {
+        [[NSThread currentThread] setName:@"AFNetworking"];
+
+        NSRunLoop *runLoop = [NSRunLoop currentRunLoop];
+         // 这里主要是监听某个 port，目的是让这个 Thread 不会回收
+        [runLoop addPort:[NSMachPort port] forMode:NSDefaultRunLoopMode]; 
+        [runLoop run];
+    }
+}
+```
+
+（2）通过RunLoop的NSDefaultRunLoopMode状态，可以捕获ScrollView、TableView处于非滑动状态，在此Mode中进行一些UI操作（如填充图片、渲染文字等），可以避免在滑动时，主线程处理太多UI事件造成卡顿。
+
+（3）在一定时间内监听某种事件，或执行某种任务的线程
+
+这种场景一般会出现在，如我需要在应用启动之后，在一定时间内持续更新某项数据。如下代码，在30分钟内，每隔30s执行onTimerFired:
+
+```objective-c
+@autoreleasepool {
+    NSRunLoop * runLoop = [NSRunLoop currentRunLoop];
+    NSTimer * udpateTimer = [NSTimer timerWithTimeInterval:30
+                                                    target:self
+                                                  selector:@selector(onTimerFired:)
+                                                  userInfo:nil
+                                                   repeats:YES];
+    [runLoop addTimer:udpateTimer forMode:NSRunLoopCommonModes];
+    [runLoop runUntilDate:[NSDate dateWithTimeIntervalSinceNow:60*30]];
+}
+```
+
 
 
 ## 三、Runtime
 
-### 参考链接http://tech.glowing.com/cn/method-swizzling-aop/
-
 ### 1. Method Swizzling
+
+### 参考链接http://tech.glowing.com/cn/method-swizzling-aop/
 
 #### 【示例】通过Method Swizzling实现Log日志
 
