@@ -6,7 +6,7 @@
 
 #### 导航
 
-<a href='#content'>正文</a> 	<a href='photos'>美不胜收</a>		<a href='#end'>结束语</a>
+<a href='#content'>正文</a> 	<a href='#photos'>美不胜收</a>		<a href='#end'>结束语</a>
 
 #### 联系我
 
