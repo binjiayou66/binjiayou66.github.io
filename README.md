@@ -4,6 +4,10 @@
 
 一只iOS开发汪，骑行爱好者，摄影菜手。爱生活，爱游戏。
 
+#### 导航
+
+<a href='#content'>正文</a> 	<a href='photos'>美不胜收</a>		<a href='#end'>结束语</a>
+
 #### 联系我
 
 Email：binjiayou66@163.com
@@ -11,6 +15,8 @@ Email：binjiayou66@163.com
 QQ: 1286216625
 
 <hr>
+
+<a id='content'></a>
 
 ## 正文
 
@@ -24,7 +30,7 @@ QQ: 1286216625
 
 <hr>
 
-
+<a id='photos'></a>
 
 ## 美不胜收
 
@@ -61,7 +67,7 @@ QQ: 1286216625
 
 <hr>
 
-
+<a id='end'></a>
 
 ## 结束语
 
