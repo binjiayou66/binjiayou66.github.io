@@ -122,7 +122,7 @@ pod lib lint
 ### 3. 提交spec文件至私有Pod仓库
 
 ```shell
-pod repo push iOSSpecs iOSModulizationNetworking.podspec
+pod repo push iSpecs iNetworking.podspec
 ```
 
 
