@@ -148,11 +148,15 @@ NSRunLoop 是基于 CFRunLoopRef 的封装，提供了面向对象的 API，但�
 
 （5）CFRunLoopObserverRef
 
+![construction](../resources/images/runloop/runloopconstruction.png)
+
 一个 RunLoop 包含若干个 Mode，每个 Mode 又包含若干个 Source/Timer/Observer。每次调用 RunLoop 的主函数时，只能指定其中一个 Mode，这个Mode被称作 CurrentMode。如果需要切换 Mode，只能退出 Loop，再重新指定一个 Mode 进入。这样做主要是为了分隔开不同组的 Source/Timer/Observer，让其互不影响。
 
 
 
 ### 3. 内部逻辑
+
+![construction](../resources/images/runloop/runloopflow.png)
 
 
 

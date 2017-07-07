@@ -24,6 +24,29 @@ QQ: 1286216625
 
 <hr>
 
+<table width="100%" style="text-align: center">
+
+<tr style="margin: 0 auto">
+
+<td style="width: 20%; margin: 0 20px"><img style="width: 300px" src="resources/images/photos/01.jpg"></td>
+<td style="width: 20%; margin: 0 20px"><img style="width: 300px" src="resources/images/photos/02.jpg"></td>
+<td style="width: 20%; margin: 0 20px"><img style="width: 300px" src="resources/images/photos/03.jpg"></td>
+<td style="width: 20%; margin: 0 20px"><img style="width: 300px" src="resources/images/photos/04.jpg"></td>
+
+</tr>
+<tr style="margin: 0 auto">
+
+<td style="width: 20%; margin: 0 20px"><img style="width: 300px" src="resources/images/photos/05.jpg"></td>
+<td style="width: 20%; margin: 0 20px"><img style="width: 300px" src="resources/images/photos/06.jpg"></td>
+<td style="width: 20%; margin: 0 20px"><img style="width: 300px" src="resources/images/photos/07.JPG"></td>
+<td style="width: 20%; margin: 0 20px"><img style="width: 300px" src="resources/images/photos/08.jpg"></td>
+
+</tr>
+
+</table>
+
+
+
 ## 结束语
 
 安得广厦千万间。
