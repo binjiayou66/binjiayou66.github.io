@@ -8,6 +8,8 @@
 
 ### 2. 本文模块化结构示意图
 
+示意图中白点标识的模块会在本文中引用或者创建，进行结构演示。
+
 ![construction](../resources/images/modulization/construction.png)
 
 
