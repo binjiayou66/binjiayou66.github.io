@@ -114,7 +114,7 @@ int main() {
 }
 ```
 
-### （1）___main_block_func_0函数
+### （1）\_\_main_block_func_0函数
 
 在编译后的文件中，我们最先能够看到的是与我们所写的Block有相同功能的C函数：
 
@@ -128,7 +128,7 @@ static void __main_block_func_0(struct __main_block_impl_0 *__cself) {
 
 ### （2）main函数代码分析
 
-既然最终Block执行，即为___main_block_func_0函数被调用，那么程序是如何执行到该函数中的呢？
+既然最终Block执行，即为\_\_main_block_func_0函数被调用，那么程序是如何执行到该函数中的呢？
 
 我们从main函数切入，main函数只有两句代码：
 
@@ -152,9 +152,9 @@ __main_block_impl_0 temp = __main_block_impl_0((void *)__main_block_func_0, &__m
 __main_block_impl_0 *block = &temp;
 ```
 
-这句代码中，首先通过结构体的构造函数创建了一个___main_block_impl_0结构体实例，之后取该实例的地址，并将地址赋值给block指针。
+这句代码中，首先通过结构体的构造函数创建了一个\_\_main_block_impl_0结构体实例，之后取该实例的地址，并将地址赋值给block指针。
 
-这里我们关注一下___main_block_impl_0结构体的构造方法。
+这里我们关注一下\_\_main_block_impl_0结构体的构造方法。
 
 ```c
 __main_block_impl_0(void *fp, struct __main_block_desc_0 *desc, int flags=0) {
@@ -174,7 +174,7 @@ FuncPtr = __main_block_func_0;
 Desc = __main_block_desc_0_DATA;
 ```
 
-这里我们主要关注一下FuncPtr指针指向了___main_block_func_0函数。
+这里我们主要关注一下FuncPtr指针指向了\_\_main_block_func_0函数。
 
 
 
@@ -190,7 +190,7 @@ b. 第二句代码
 ((__block_impl *)block->FuncPtr)(block);
 ```
 
-由第一句代码的分析中我们得知FuncPtr指针指向了___main_block_func_0函数，所以第二句代码最终的效果即为调用了该函数。
+由第一句代码的分析中我们得知FuncPtr指针指向了\_\_main_block_func_0函数，所以第二句代码最终的效果即为调用了该函数。
 
 
 
@@ -286,7 +286,28 @@ struct __block_impl {
 
 # 三、 Block如何截获局部变量、修改变量
 
+## 1. Block捕获局部变量
 
+我们写一段代码如下，并运行：
+
+```C
+#include <stdio.h>
+
+int main() {
+	int age = 10;
+    void (^block)(char[]) = ^(char *name){ printf("Hello, %s, are you %d years old?", name, age); };
+    
+    age = 11;
+    block("Jack");
+
+    return 0;
+}
+
+```
+
+运行结果：Hello, Jack, are you 10 years old?
+
+我们通过代码可以看到，调用block之前，我们修改了age的值为11，运行结果显示，block中打印的age依然为修改之前的10
 
 
 
