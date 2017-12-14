@@ -22,6 +22,10 @@ QQ: 1286216625
 
 ## 正文
 
+###[2017.12.14 iOS界面调试利器Reveal的使用](iOS/RevealAndJailbreakReveal.md)
+
+本文主要介绍了Reveal App一般使用的安装配置方法，以及通过越狱iOS设备与Reveal实现窥探任意App界面布局的操作步骤
+
 ### [2017.09.21 Block的几个重要问题解析](iOS/Block.md)
 
 在iOS编程中，Block给我们带来了很多便利，本文主要对Block进行稍微深入一些的探究。主要包含Block的本质探讨及Block如何捕获局部变量、修改局部变量问题研究。
