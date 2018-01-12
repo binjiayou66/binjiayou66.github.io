@@ -17,9 +17,9 @@
         }
         #timeArea {
             text-align: center;
-            position: fixed;
-            top: 222px;
-            width: 60%;
+            position: absolute;
+            top: 0;
+            width: 70%;
             height: 40px;
             background-color: #ddd;
             z-index: 99999;
