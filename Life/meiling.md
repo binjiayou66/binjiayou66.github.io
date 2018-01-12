@@ -17,11 +17,10 @@
         }
         #timeArea {
             text-align: center;
-            position: absolute;
             top: 0;
             width: 70%;
             height: 40px;
-            z-index: 99999;
+            background-color: #ddd;
         }
         #time {
             width: 100%;
