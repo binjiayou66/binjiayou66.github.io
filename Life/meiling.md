@@ -1,4 +1,3 @@
-<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -19,8 +18,8 @@
         #timeArea {
             text-align: center;
             position: fixed;
-            top: 0;
-            width: 100%;
+            top: 222px;
+            width: 60%;
             height: 40px;
             background-color: #ddd;
             z-index: 99999;
