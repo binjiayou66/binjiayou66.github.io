@@ -4,7 +4,7 @@
 
 <script type="text/javascript">
 	window.onload = function () {
-		var eles = document.getElementsByName('a');
+		var eles = document.getElementsByTagName('a');
 		for (ele in eles) {
 			ele.target = '_blank';
 		}
