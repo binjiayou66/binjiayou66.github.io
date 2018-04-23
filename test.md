@@ -6,7 +6,7 @@
 	window.onload = function () {
 		var eles = document.getElementsByTagName('a');
 		for (ele in eles) {
-			ele.target = '_blank';
+			ele.setAttribute('target', '_blank');
 		}
 	}
 </script>
