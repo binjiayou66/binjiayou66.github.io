@@ -5,8 +5,8 @@
 <script type="text/javascript">
 	window.onload = function () {
 		var eles = document.getElementsByTagName('a');
-		for (ele in eles) {
-			ele.setAttribute('target', '_blank');
+		for (var i = 0; i < eles.length; i++) {
+			eles[i].setAttribute('target', '_blank');
 		}
 	}
 </script>
