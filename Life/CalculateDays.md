@@ -98,12 +98,7 @@
 	}
 	
 	 function getDateDiff(sDate1, sDate2) {
-	   var aDate, oDate1, oDate2, iDays;
-	   aDate = sDate1.split("-");
-	   oDate1 = new  Date(aDate[1] + '-' + aDate[2] + '-' + aDate[0]);
-	   aDate = sDate2.split("-"); 
-	   oDate2 = new Date(aDate[1] + '-' + aDate[2] + '-' + aDate[0]);
-	   iDays = parseInt(Math.abs(oDate1  -  oDate2)  /  1000  /  60  /  60  /24); 
+	   iDays = parseInt(Math.abs(new Date(sDate1) - new Date(sDate2)) / 1000 / 60 / 60 / 24); 
 	   return iDays + 1;
 	}
 </script>
