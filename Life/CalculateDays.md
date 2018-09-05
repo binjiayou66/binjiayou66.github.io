@@ -11,12 +11,12 @@
 		margin: 20px 5%;
 	}
 	p {
-		width: 9%;
+		width: 15%;
 		display: inline-block;
 	}
 	input {
 		padding: 0 1%;
-		width: 88%;
+		width: 82%;
 		height: 30px;
 		display: inline-block;
 	}
