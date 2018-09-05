@@ -30,9 +30,9 @@
 </head>
 <body>
 
-<div class="wrapper"><p>开始日期：</p><input id="begin-date-input" type="date" /></div>
+<div class="wrapper"><p>开始日期：</p><input id="begin-date-input" type="date" placeholder="格式：2018-08-09" /></div>
 <div class="wrapper"><p>假期天数：</p><input id="calculate-days" type="number" placeholder="这里填假期天数" /></div>
-<div class="wrapper"><p>截止日期：</p><input id="end-date-input" type="date" ></div>
+<div class="wrapper"><p>截止日期：</p><input id="end-date-input" type="date" placeholder="格式：2018-08-09"  ></div>
 <button onclick="onClickCalculateButton()">计   算</button>
 
 <script type="text/javascript">
