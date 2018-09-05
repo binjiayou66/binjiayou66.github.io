@@ -64,6 +64,7 @@
 		}
 		else if (beginValue && !daysValue && endValue) 
 		{
+			if (beginValue > endValue) { alert("结束日期不能早于开始日期"); return; };
 			calclulateDays.value = getDateDiff(beginValue, endValue);
 		} 
 		else if (!beginValue && daysValue && endValue) 
