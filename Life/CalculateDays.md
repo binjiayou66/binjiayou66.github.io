@@ -43,7 +43,7 @@
 	function onClickCalculateButton () {
 		var beginDateInput = document.getElementById('begin-date-input');
 		var calclulateDays = document.getElementById('calculate-days');
-		var days = calclulateDays.value;
+		var days = calclulateDays.value - 1;
 		var date = new Date(beginDateInput.value);
 		var milliseconds = date.getTime() + 1000*60*60*24*days;
 		var newDate= new Date(milliseconds);
