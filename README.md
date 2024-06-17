@@ -1,3 +1,4 @@
+<script src="https://fastly.jsdelivr.net/gh/stevenjoezhang/live2d-widget@latest/autoload.js"></script>
 <a id="top" name="top"></a>
 
 ## 欢迎访问我的GitHub Pages
